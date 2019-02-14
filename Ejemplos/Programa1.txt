@@ -1,0 +1,60 @@
+#include <iostream>
+
+using namespace std;
+
+struct Group {
+	int number;
+	int count;
+	Group *next;
+}*origin, *aux;
+int numberGroupGlobal = 1;
+void main()
+{
+	origin = aux = NULL;
+
+	//Carga Informacion
+
+	if (origin == NULL)
+	{
+		origin = new Group;
+		origin->number = numberGroupGlobal++;
+		cout << "Grupo " << origin->number << endl;
+		cout << "Cantidad de Alumnos: ";
+		cin >> origin->count;
+		origin->next = NULL;
+		aux = origin;
+	}
+	while (aux->next != NULL)
+		aux = aux->next;
+	aux->next = new Group;
+	aux = aux->next;
+
+	aux->number = numberGroupGlobal++;
+	cout << "Grupo " << aux->number << endl;
+	cout << "Cantidad de Alumnos: ";
+	cin >> aux->count;
+	aux->next = NULL;
+	aux = origin;
+
+	system("PAUSE");
+	aux = origin;
+	while(aux != NULL)
+	{
+		cout << endl << endl << "Grupo: " << aux->number << endl;
+		cout << "Alumnos: " << aux->count << endl;
+		aux = aux->next;
+	}
+	system("PAUSE");
+	while (origin != NULL) {
+		aux = origin;
+		if (aux != NULL)
+		{
+			origin = origin->next;
+			delete aux;
+
+			cout << endl << "Nodo Eliminado" << endl;
+			aux = NULL;
+		}
+	}
+	system("PAUSE");
+}
