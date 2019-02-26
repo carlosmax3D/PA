@@ -1,0 +1,154 @@
+#include <iostream>
+#include <conio.h>
+using namespace std;
+
+void CapturarGrupo();
+void EliminarUno();
+void EliminarTodo();
+void Imprimir();
+
+struct Group {
+	int number;//Numero Grupo
+	int count;//Cantidad Alumnos
+	Group *next;
+	Group *prev;
+}*origin, *aux;
+int numberGroupGlobal = 1;
+
+void main()
+{
+	origin = aux = NULL;
+	int option;
+	do
+	{
+		system("CLS");
+		cout << "1 .- Agregar" << endl;
+		cout << "2 .- Imprimir" << endl;
+		cout << "3 .- Borrar un grupo" << endl;
+		cout << "4 .- Borrar todos los grupos" << endl;
+		cout << "6 .- Salir" << endl;
+		cin >> option;
+		system("CLS");
+		switch (option)
+		{
+		case 1://Registrar
+			CapturarGrupo();
+			break;
+		case 2://Imprimir
+			Imprimir();
+			break;
+		case 3://Borrar uno
+			EliminarUno();
+			break;
+		case 4://Borrar todos
+			EliminarTodo();
+			break;
+		default:
+			break;
+		}
+	} while (option != 6);
+}
+
+void CapturarGrupo()
+{
+	aux = origin;
+	if (origin == NULL)
+	{
+		origin = new Group;
+		origin->number = numberGroupGlobal++;
+		cout << "Numero de alumnos: ";
+		cin >> origin->count;
+		origin->next = NULL;
+		origin->prev = NULL;
+	}
+	else
+	{
+		while (aux->next != NULL)
+		{
+			aux = aux->next;
+		}
+		aux->next = new Group;
+		aux->next->prev = aux;
+		aux = aux->next;
+		aux->number = numberGroupGlobal++;
+		cout << "Numero de alumnos: ";
+		cin >> aux->count;
+		aux->next = NULL;
+	}
+}
+
+void EliminarUno()
+{
+	int grupoAEliminar = -1;
+	Group *temp;
+	aux = temp = origin;
+	bool encontrado = true;
+	if (origin != NULL)
+	{
+		cout << "Que grupo desea eliminar" << endl;
+		cin >> grupoAEliminar;
+		while (aux->number != grupoAEliminar)
+		{
+			temp = aux;
+			aux = aux->next;
+			if (aux == NULL)
+			{
+				encontrado = false;
+				break;
+			}
+		}
+		if (encontrado)
+		{
+			temp->next = aux->next;
+			if (origin == aux)
+				origin = origin->next;
+			delete aux;
+		}
+		else
+		{
+			cout << "Grupo no encontrado" << endl;
+		}
+	}
+	else
+	{
+		cout << "Nada que Eliminar" << endl;
+	}
+	system("PAUSE");
+}
+
+void EliminarTodo()
+{
+	int option = -1;
+	cout << "Desea eliminar todo?" << endl;
+	cout << "1.- Si 2.- No" << endl;
+	cin >> option;
+	if (option == 1)
+	{
+		aux = origin;
+		if (aux != NULL)
+		{
+			while (origin != NULL)
+			{
+				aux = origin;
+				origin = origin->next;
+				delete aux;
+			}
+		}
+		else
+		{
+			cout << "Lista esta vacia" << endl;
+		}
+	}
+}
+
+void Imprimir()
+{
+	aux = origin;
+	while (aux != NULL)
+	{
+		cout << "Grupo: " << aux->number << endl;
+		cout << "Alumnos: " << aux->count << endl;
+		aux = aux->next;
+	}
+	system("PAUSE");
+}
