@@ -1,0 +1,99 @@
+#include<windows.h>
+
+//Callback
+LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, 
+	WPARAM wParam, LPARAM lParam);
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	PSTR cmdLine, int showCmd) 
+{
+	WNDCLASSEX wClass; //Nuestra ventana
+	ZeroMemory(&wClass, sizeof(WNDCLASSEX));//Incializa el bloque 
+	//de memoria con 0 para evitar que inicie con basura
+	wClass.cbClsExtra = NULL; /* Indica bytes extra para la estructura*/
+	wClass.cbWndExtra = NULL; /* Indica bytes extra para la instancia*/
+
+	wClass.cbSize = sizeof(WNDCLASSEX); /*Especificamos el atamño de la ventana en bytes*/
+
+	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW; // Color de fondo
+	wClass.hCursor = LoadCursor(NULL, IDC_ARROW);// Cursor
+
+	wClass.hIcon = NULL; // Icono de la ventana en barra de tareas
+	wClass.hIconSm = NULL; // Icono de la ventana en ventana
+	wClass.hInstance = hInstance; //Identificador que nos da el Sistema Operativo
+
+	wClass.lpfnWndProc = (WNDPROC)WinProc; // Callback al cual va acceder
+
+	wClass.lpszClassName = "Windows Class"; // Nombre de nuestra ventana
+
+	wClass.lpszMenuName = NULL; // Si se usa algun menu sando resource
+
+	wClass.style = CS_HREDRAW | CS_VREDRAW; //Comportamiento de nuestra ventana
+	/*Redibujar ventana si el usuario la mueve horizontalmente*/
+	/*Redibujar ventana si el usuario la mueve verticalmente*/
+
+	if (!RegisterClassEx(&wClass))
+	{
+		int nResult = GetLastError();
+		MessageBox(NULL, "Windows Class fallo al crearse", 
+			"Windows Class ERROR", MB_ICONERROR);
+		// Controlador (HANDLER)
+		// Mensaje
+		// Titulo
+		// Icono
+	}
+
+	HWND hWnd = CreateWindowEx(NULL,
+		"Windows Class", // Nombre
+		"Funcion Principal", //Titulo ventana
+		WS_OVERLAPPEDWINDOW, //Estilo 
+		1500, // Posicion X
+		100, // Posicion Y
+		640, // Ancho
+		480, // Alto
+		NULL, //Ventana Padre
+		NULL, //Menu
+		hInstance, // Identificador asignado por nuestro Sistema Operativo
+		NULL //Puntero
+	);
+
+	if (!hWnd)
+	{
+		int nResult = GetLastError();
+		MessageBox(NULL, "Controlador no generado", "Windows Creation Failed", MB_ICONERROR);
+	}
+
+	ShowWindow(hWnd, showCmd); // Mostrar la venana
+
+	MSG msg; //Variable que escuchara los mensajes
+	ZeroMemory(&msg, sizeof(MSG));//Limpiar la memoria
+	//Regresaremos un true ientras o sea un QUIT
+	while (GetMessage(&msg, NULL, 0, 0))
+	{
+		TranslateMessage(&msg); //Traduce mensajes de texto
+		DispatchMessage(&msg); //Envia los mensajes a su receptor
+	}
+	return 0;
+}
+
+LRESULT CALLBACK WinProc(HWND hWnd, UINT msg, 
+	WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)//Escuchar el mensaje
+	{
+		case WM_CREATE:// Al momento de crear la ventana
+			MessageBox(NULL, "Se creo ventana",
+				"Ventana Creada", MB_ICONEXCLAMATION);
+			break;
+		case WM_DESTROY: //Al momento de destruir la ventana
+			PostQuitMessage(0); // Mensaje de salida, rompe el ciclo de mensajes
+			break;
+		case WM_CLOSE: // Al momento de cerrar la ventana
+			DestroyWindow(hWnd);//Mandar a destruir la ventana
+			break;
+		default:
+			return DefWindowProc(hWnd, msg, wParam, lParam);
+			break;
+	}
+	return 0;
+}
