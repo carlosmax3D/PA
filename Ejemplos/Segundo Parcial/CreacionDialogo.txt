@@ -1,0 +1,112 @@
+#include <windows.h>
+#include "resource.h"
+
+BOOL CALLBACK DialogProc(HWND hWnd, UINT msg,
+	WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DialogProc2(HWND hWnd, UINT msg,
+	WPARAM wParam, LPARAM lParam);
+HINSTANCE hInstanceGlobal;
+int showMSG;
+
+int WINAPI WinMain(HINSTANCE hInstance, 
+	HINSTANCE hPrevInstance,
+	PSTR cmdLine, int showCmd)
+{
+	hInstanceGlobal = hInstance;
+	showMSG = showCmd;
+	
+	HWND dialog;	
+	dialog = CreateDialog(hInstance, 
+		MAKEINTRESOURCE(IDD_DIALOG1), 
+		NULL, DialogProc);
+	if (!dialog)
+	{
+		MessageBox(NULL, "No se pudo crear el Dialog",
+			"Creacion de Dialog",
+			MB_ICONERROR);
+		return 1;
+	}
+	ShowWindow(dialog, showCmd);
+	UpdateWindow(dialog);
+	MSG msg;
+	while (GetMessage(&msg,0,0,0))
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	return (int)msg.wParam;
+}
+
+BOOL CALLBACK DialogProc(HWND hWnd, UINT msg, 
+	WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		MessageBox(NULL, "Funcionando", "Dialogo",
+			NULL);
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDCLOSE:
+			PostQuitMessage(0);
+			return TRUE;
+			break;
+		case IDC_BUTTON1:
+			HWND dialog;
+			dialog = CreateDialog(hInstanceGlobal,
+				MAKEINTRESOURCE(IDD_HELP),
+				NULL, DialogProc2);
+			ShowWindow(dialog, showMSG);
+			UpdateWindow(dialog);
+			break;
+		case IDC_BTNPLUS:
+			MessageBox(NULL, "SUMA", "Dialogo",
+				NULL);
+			break;
+		}
+
+		break;
+	case WM_CLOSE:
+		DestroyWindow(hWnd);
+		return TRUE;
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return TRUE;
+		break;
+	}
+	return FALSE;
+}
+
+BOOL CALLBACK DialogProc2(HWND hWnd, UINT msg,
+	WPARAM wParam, LPARAM lParam)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+		MessageBox(NULL, "Funcionando 2", "Dialogo 2",
+			NULL);
+		break;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			PostQuitMessage(0);
+			return TRUE;
+			break;
+		}
+
+		break;
+	case WM_CLOSE:
+		DestroyWindow(hWnd);
+		return TRUE;
+		break;
+	case WM_DESTROY:
+		PostQuitMessage(0);
+		return TRUE;
+		break;
+	}
+	return FALSE;
+}
